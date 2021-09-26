@@ -20,4 +20,9 @@ class Profile extends Model
     {
         return $this->hasMany(Watchlist::class);
     }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

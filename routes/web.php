@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\WatchlistController;
 
 /*
@@ -20,6 +21,7 @@ Route::get('/', function () {
 
 Route::resources([
     'watchlists' => WatchlistController::class,
+    'products' => ProductController::class,
 ]);
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
