@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\Watchlist;
 use Illuminate\Http\Request;
 
@@ -41,6 +42,22 @@ class WatchlistController extends Controller
             'profile_id' => 'required',
             'name' => 'required'
         ]));
+
+        return redirect()->route('watchlists.index');
+    }
+
+    public function addProduct(Request $request)
+    {
+        $validated = $request->validate([
+            'watchlist_id' => 'required',
+            'product_id' => 'required'
+        ]);
+
+        $watchlist = Watchlist::where('id', $validated['watchlist_id'])->firstOrFail();
+
+        $product = Product::where('id', $validated['product_id'])->firstOrFail();
+
+        $watchlist->products()->save($product);
 
         return redirect()->route('watchlists.index');
     }

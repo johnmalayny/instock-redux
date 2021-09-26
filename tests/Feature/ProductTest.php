@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use App\Models\User;
+use App\Models\Product;
+use App\Models\Watchlist;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ProductTest extends TestCase
@@ -57,5 +59,28 @@ class ProductTest extends TestCase
         $this->attributes['profile_id'] = null;
 
         $this->post('/products', $this->attributes)->assertSessionHasErrors('profile_id');
+    }
+
+    /** @test */
+    public function a_product_can_be_added_to_a_watchlist()
+    {
+        $watchlist = $this->user->profile->watchlists()->save(
+            Watchlist::create([
+                'name' => 'test-watchlist',
+                'profile_id' => $this->user->profile->id
+            ])
+        );
+
+        $product = Product::create($this->attributes);
+
+        $this->post(
+            '/watchlist/add/',
+            [
+                'product_id' => $product->id,
+                'watchlist_id' => $watchlist->id
+            ]
+        )->assertRedirect(route('watchlists.index'));
+
+        $this->get(route('watchlists.index'))->assertSee($product->manufacturer_sku);
     }
 }

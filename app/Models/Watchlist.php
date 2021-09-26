@@ -15,4 +15,9 @@ class Watchlist extends Model
     {
         return $this->belongsTo(Profile::class);
     }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class);
+    }
 }
