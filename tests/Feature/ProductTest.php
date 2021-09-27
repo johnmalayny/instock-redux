@@ -64,6 +64,8 @@ class ProductTest extends TestCase
     /** @test */
     public function a_product_can_be_added_to_a_watchlist()
     {
+        $this->withoutExceptionHandling();
+
         $watchlist = $this->user->profile->watchlists()->save(
             Watchlist::create([
                 'name' => 'test-watchlist',
@@ -73,14 +75,39 @@ class ProductTest extends TestCase
 
         $product = Product::create($this->attributes);
 
-        $this->post(
+        $this->actingAs($this->user)
+            ->post(
+                '/watchlist/add/',
+                [
+                    'product_id' => $product->id,
+                    'watchlist_id' => $watchlist->id
+                ]
+            )->assertRedirect(route('watchlists.index'));
+
+        $this->get(route('watchlists.index'))->assertSee($product->manufacturer_sku);
+    }
+
+    /** @test */
+    public function a_product_can_only_be_added_to_the_watchlist_by_the_user_who_owns_the_watchlist()
+    {
+        $user_who_does_not_own_watchlist = User::factory()->create();
+
+        $watchlist = $this->user->profile->watchlists()->save(
+            Watchlist::create([
+                'name' => 'test-watchlist',
+                'profile_id' => $this->user->profile->id
+            ])
+        );
+
+        $product = Product::create($this->attributes);
+
+        $this->actingAs($user_who_does_not_own_watchlist)
+        ->post(
             '/watchlist/add/',
             [
                 'product_id' => $product->id,
                 'watchlist_id' => $watchlist->id
             ]
-        )->assertRedirect(route('watchlists.index'));
-
-        $this->get(route('watchlists.index'))->assertSee($product->manufacturer_sku);
+        )->assertUnauthorized();
     }
 }

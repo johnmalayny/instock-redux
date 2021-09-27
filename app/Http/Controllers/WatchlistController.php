@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Watchlist;
 use Illuminate\Http\Request;
+use App\Helpers\Profile\ProfileOwnsThisWatchlist;
 
 class WatchlistController extends Controller
 {
@@ -57,9 +58,13 @@ class WatchlistController extends Controller
 
         $product = Product::where('id', $validated['product_id'])->firstOrFail();
 
-        $watchlist->products()->save($product);
+        if (ProfileOwnsThisWatchlist::check($request->user()->profile, $watchlist)) {
+            $watchlist->products()->save($product);
 
-        return redirect()->route('watchlists.index');
+            return redirect()->route('watchlists.index');
+        }
+
+        abort(401);
     }
 
     /**

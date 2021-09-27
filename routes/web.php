@@ -19,7 +19,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/watchlist/add/', [WatchlistController::class, 'addProduct'])->name('watchlists.addProduct');
+Route::group(['middleware' => 'auth'], function () {
+    Route::post('/watchlist/add/', [WatchlistController::class, 'addProduct'])->name('watchlists.addProduct');
+});
 
 Route::resources([
     'watchlists' => WatchlistController::class,
