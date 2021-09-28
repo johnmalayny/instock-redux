@@ -20,4 +20,11 @@ class Product extends Model
     {
         return $this->belongsToMany(Watchlist::class);
     }
+
+    public function retailers()
+    {
+        return $this->belongsToMany(Retailer::class)->withPivot([
+            'retailer_product_page_url'
+        ]);
+    }
 }

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RetailerController;
 use App\Http\Controllers\WatchlistController;
 
 /*
@@ -21,6 +22,7 @@ Route::get('/', function () {
 
 Route::group(['middleware' => 'auth'], function () {
     Route::post('/watchlist/add/', [WatchlistController::class, 'addProduct'])->name('watchlists.addProduct');
+    Route::post('/retailers/add/', [RetailerController::class, 'addProduct'])->name('retailers.addProduct');
 });
 
 Route::resources([
